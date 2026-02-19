@@ -17,6 +17,8 @@ static void tryExitGracefully(int s) {
 
 int main(int argc, char *argv[]) {
 
+    QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+
     qSetMessagePattern("%{time process}: [%{type}] %{message}");
 
     app = new QApplication(argc, argv);
