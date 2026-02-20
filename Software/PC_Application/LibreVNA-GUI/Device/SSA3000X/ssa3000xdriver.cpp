@@ -118,6 +118,8 @@ bool SSA3000XDriver::connectTo(QString serial)
         maxFreq = 3200000000;
     } else if(info.hardware_version == "SSA3021X") {
         maxFreq = 2100000000;
+    } else if(info.hardware_version == "SSA3075X-R") {
+        maxFreq = 7500000000;
     } else {
         dataSocket.close();
         InformationBox::ShowError("Error", "Invalid hardware version: " + info.hardware_version);
