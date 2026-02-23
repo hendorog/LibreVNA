@@ -10,6 +10,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QFileDialog>
+#include <QApplication>
+#include <QPalette>
+#include <QStyleFactory>
 
 #include <map>
 #include <fstream>
@@ -244,6 +247,8 @@ PreferencesDialog::~PreferencesDialog()
 
 void PreferencesDialog::setInitialGUIState()
 {
+    ui->GeneralTheme->setCurrentIndex((int) p->General.theme);
+
     ui->StartupAutoconnect->setChecked(p->Startup.ConnectToFirstDevice);
     if(p->Startup.RememberSweepSettings) {
         ui->StartupSweepLastUsed->click();
@@ -373,6 +378,8 @@ void PreferencesDialog::setInitialGUIState()
 
 void PreferencesDialog::updateFromGUI()
 {
+    p->General.theme = (AppTheme) ui->GeneralTheme->currentIndex();
+
     p->Startup.ConnectToFirstDevice = ui->StartupAutoconnect->isChecked();
     p->Startup.RememberSweepSettings = ui->StartupSweepLastUsed->isChecked();
     p->Startup.UseSetupFile = ui->StartupUseSetupFile->isChecked();
@@ -569,6 +576,59 @@ QFileDialog::Options Preferences::QFileDialogOptions(QFileDialog::Options option
         option = (QFileDialog::Option) ((int) option | QFileDialog::DontUseNativeDialog);
     }
     return option;
+}
+
+void Preferences::applyTheme()
+{
+    auto app = qApp;
+    switch(instance.General.theme) {
+    case AppTheme::ThemeSystem:
+        app->setStyleSheet("");
+        app->setPalette(app->style()->standardPalette());
+        break;
+    case AppTheme::ThemeLight: {
+        app->setStyle(QStyleFactory::create("Fusion"));
+        QPalette p;
+        p.setColor(QPalette::Window, QColor(240, 240, 240));
+        p.setColor(QPalette::WindowText, Qt::black);
+        p.setColor(QPalette::Base, Qt::white);
+        p.setColor(QPalette::AlternateBase, QColor(233, 233, 233));
+        p.setColor(QPalette::ToolTipBase, QColor(255, 255, 220));
+        p.setColor(QPalette::ToolTipText, Qt::black);
+        p.setColor(QPalette::Text, Qt::black);
+        p.setColor(QPalette::Button, QColor(240, 240, 240));
+        p.setColor(QPalette::ButtonText, Qt::black);
+        p.setColor(QPalette::BrightText, Qt::red);
+        p.setColor(QPalette::Link, QColor(0, 0, 255));
+        p.setColor(QPalette::Highlight, QColor(42, 130, 218));
+        p.setColor(QPalette::HighlightedText, Qt::white);
+        p.setColor(QPalette::Disabled, QPalette::Text, QColor(127, 127, 127));
+        p.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(127, 127, 127));
+        app->setPalette(p);
+        app->setStyleSheet("");
+    } break;
+    case AppTheme::ThemeDark: {
+        app->setStyle(QStyleFactory::create("Fusion"));
+        QPalette p;
+        p.setColor(QPalette::Window, QColor(53, 53, 53));
+        p.setColor(QPalette::WindowText, QColor(208, 208, 208));
+        p.setColor(QPalette::Base, QColor(35, 35, 35));
+        p.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+        p.setColor(QPalette::ToolTipBase, QColor(25, 25, 25));
+        p.setColor(QPalette::ToolTipText, QColor(208, 208, 208));
+        p.setColor(QPalette::Text, QColor(208, 208, 208));
+        p.setColor(QPalette::Button, QColor(53, 53, 53));
+        p.setColor(QPalette::ButtonText, QColor(208, 208, 208));
+        p.setColor(QPalette::BrightText, Qt::red);
+        p.setColor(QPalette::Link, QColor(42, 130, 218));
+        p.setColor(QPalette::Highlight, QColor(42, 130, 218));
+        p.setColor(QPalette::HighlightedText, Qt::black);
+        p.setColor(QPalette::Disabled, QPalette::Text, QColor(127, 127, 127));
+        p.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(127, 127, 127));
+        app->setPalette(p);
+        app->setStyleSheet("QToolTip { color: #d0d0d0; background-color: #191919; border: 1px solid #3a3a3a; }");
+    } break;
+    }
 }
 
 void Preferences::fromJSON(nlohmann::json j)

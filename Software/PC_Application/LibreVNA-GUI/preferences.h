@@ -45,6 +45,14 @@ enum MarkerSymbolStyle {
 
 Q_DECLARE_METATYPE(MarkerSymbolStyle);
 
+enum AppTheme {
+    ThemeSystem = 0,
+    ThemeLight = 1,
+    ThemeDark = 2,
+};
+
+Q_DECLARE_METATYPE(AppTheme)
+
 
 class Preferences : public QObject, public Savable {
     Q_OBJECT
@@ -66,7 +74,11 @@ public:
     void manualTCPport() { TCPoverride = true; }
 
     static QFileDialog::Options QFileDialogOptions(QFileDialog::Options option = (QFileDialog::Options) 0x00000000);
+    static void applyTheme();
 
+    struct {
+        AppTheme theme;
+    } General;
     struct {
         bool ConnectToFirstDevice;
         bool RememberSweepSettings;
@@ -254,6 +266,7 @@ private:
 
     // TODO remove settings that have been moved to LibreVNADriver
     const std::vector<Savable::SettingDescription> descr = {{
+        {&General.theme, "General.theme", AppTheme::ThemeSystem},
         {&Startup.ConnectToFirstDevice, "Startup.ConnectToFirstDevice", true},
         {&Startup.RememberSweepSettings, "Startup.RememberSweepSettings", false},
         {&Startup.UseSetupFile, "Startup.UseSetupFile", false},
