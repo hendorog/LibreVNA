@@ -102,6 +102,8 @@ AppWindow::AppWindow(QWidget *parent)
         Preferences::getInstance().load();
     }
 
+    Preferences::applyTheme();
+
     auto &p = Preferences::getInstance();
 
     device = nullptr;
@@ -807,6 +809,7 @@ void AppWindow::preferencesChanged()
 {
     auto &p = Preferences::getInstance();
     p.store();
+    Preferences::applyTheme();
     if(p.SCPIServer.enabled && !server) {
         StartTCPServer(p.SCPIServer.port);
     } else if(!p.SCPIServer.enabled && server) {
